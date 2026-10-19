@@ -31,7 +31,6 @@ time and a crashing spider cannot take down the menu.
 ## Requirements
 
 - Python 3.10+ (developed on 3.14)
-- Git
 
 ## Installation
 
@@ -99,11 +98,3 @@ GoodWatcher/
 
 - **`database is locked`**: two crawls wrote to SQLite at once. Wait and retry.
 - **No items found**: the marketplace may have changed its layout. Check `crawler.log`.
-
-## Roadmap
-
-- [ ] TODO: your ideas (more marketplaces, notification channels, ...)
-
-## License
-
-TODO: choose one (e.g. MIT) and add a `LICENSE` file.
