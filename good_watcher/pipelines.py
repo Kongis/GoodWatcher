@@ -1,5 +1,6 @@
 import requests
 import os
+import sys
 from dotenv import load_dotenv
 from itemadapter import ItemAdapter
 from good_watcher.db import connection, Goods
@@ -15,7 +16,8 @@ from datetime import datetime, timezone
 
 load_dotenv()
 WEBHOOK_URL = os.environ["DISCORD_WEBHOOK_URL"]
-#https://discord.com/api/webhooks/1558149883649728635/Z4AMF_IpLvZgstm4sZNsZRIZ3VTsfgXWuNNyjLAoIZI8dLenb0EDQ3cp16gZLvhiKJPg
+if not WEBHOOK_URL:
+    sys.exit("Unable to load DISCORD_WEBHOOK_URL from .env file (copy .env.example to .env and fill it in)")
 
 COLOR_NEW = 0x2ECC71        # zelená
 COLOR_DROP = 0x2ECC71       # zelená: cena klesla
