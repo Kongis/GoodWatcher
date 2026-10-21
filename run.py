@@ -16,7 +16,7 @@ SBAZAR_URL = "https://www.sbazar.cz/hledej/{key}"
 BAZOS_URL = "https://www.bazos.cz/search.php?hledat={key}"
 CYKLOBAZAR_URL = 'https://www.cyklobazar.cz/vsechny-kategorie?q={key}'
 AUKRO_URL = 'https://aukro.cz/lp/nejlepsi-{key}'
-WAIT_TIME = 3600
+WAIT_TIME = os.environ["WAIT_TIME"]
 
 def crawler():
     
