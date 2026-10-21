@@ -16,7 +16,6 @@ class odkarla(scrapy.Spider):
 
     async def start(self):
         yield scrapy.Request(
-            #url=URL_TEMPLATE.format(self.start_urls[0]),
             url=self.start_urls[0],
             headers={
                 "Referer": "https://www.odkarla.cz/",

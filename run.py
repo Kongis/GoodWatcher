@@ -30,6 +30,9 @@ def crawler():
             )
 
         print("Crawler was successful")
+        count = guards.conn.execute("SELECT COUNT(*) FROM goods").fetchone()[0]
+        print(f'Records in DB: {count}')
+        print("WAITING")
         time.sleep(WAIT_TIME)
 
 

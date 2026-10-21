@@ -32,11 +32,8 @@ class cyklobazar(scrapy.Spider):
             dont_filter=True,
             callback=self.parse,
         )
-        
 
     def parse(self, response: Response):
-        #print(response.text)
-
 
         for item in response.xpath('//li[@class="cb-offer-list__item"]'):
 
@@ -58,8 +55,7 @@ class cyklobazar(scrapy.Spider):
                 "price": price,
                 "notify": self.notify
             }
-        
-        
+
         next_page = response.xpath('//li[@class="paginator__item paginator__item--next"]/a/@href').get()
 
         time.sleep(2)

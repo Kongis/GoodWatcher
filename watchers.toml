@@ -11,3 +11,57 @@ name = "garmin-sbazar"
 site = "sbazar"
 search = "garmin edge"
 keywords = ""
+
+[[watcher]]
+name = "garmin-bazos"
+site = "bazos"
+search = "garmin edge"
+keywords = ""
+
+[[watcher]]
+name = "garmin-cyklobazar"
+site = "cyklobazar"
+search = "garmin edge"
+keywords = ""
+
+[[watcher]]
+name = "garmin-odkarla"
+site = "odkarla"
+search = "garmin edge"
+keywords = ""
+
+[[watcher]]
+name = "garmin-aukro"
+site = "aukro"
+search = "garmin edge"
+keywords = ""
+
+[[watcher]]
+name = "garmin-hodinky-sbazar"
+site = "sbazar"
+search = "garmin hodinky"
+keywords = ""
+
+[[watcher]]
+name = "garmin-hodinky-bazos"
+site = "bazos"
+search = "garmin hodinky"
+keywords = ""
+
+[[watcher]]
+name = "garmin-hodinky-cyklobazar"
+site = "cyklobazar"
+search = "garmin hodinky"
+keywords = ""
+
+[[watcher]]
+name = "garmin-hodinky-odkarla"
+site = "odkarla"
+search = "garmin hodinky"
+keywords = ""
+
+[[watcher]]
+name = "garmin-hodinky-aukro"
+site = "aukro"
+search = "garmin hodinky"
+keywords = ""

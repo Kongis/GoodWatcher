@@ -49,13 +49,18 @@ class Guards():
 
     def add_shop(self, record: Guard):
 
-        res = self.conn.execute("SELECT name, url, spider, keyword FROM guards WHERE name = ?", (record.name,)).fetchone()
-        if res is None:
-            self.conn.execute("INSERT INTO guards (name, url, spider, keyword, active, first) VALUES (?, ?, ?, ?, 1, 1)", (record.name, record.url, record.spider, record.keyword,))
-        
-        else:
-            self.conn.execute("UPDATE guards SET active = 1 WHERE name = ?", (record.name,))
-        self.conn.commit()
+        try:
+            res = self.conn.execute("SELECT name, url, spider, keyword FROM guards WHERE name = ?", (record.name,)).fetchone()
+            if res is None:
+                self.conn.execute("INSERT INTO guards (name, url, spider, keyword, active, first) VALUES (?, ?, ?, ?, 1, 1)", (record.name, record.url, record.spider, record.keyword,))
+            
+            else:
+                self.conn.execute("UPDATE guards SET active = 1 WHERE name = ?", (record.name,))
+            self.conn.commit()
+            print(f"Watcher {record.name} load successfully")
+        except Exception as e:
+            print(e)
+            print(f"Watcher {record.name} was not load")
 
     def deactivateAll(self):
         self.conn.execute("UPDATE guards SET active = 0")

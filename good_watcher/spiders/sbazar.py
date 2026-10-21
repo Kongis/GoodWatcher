@@ -13,8 +13,6 @@ class sbazar(scrapy.Spider):
         self.start_urls = [start_url]
         self.notify = notify
 
-        
-
     async def start(self):
         yield scrapy.Request(
             url=self.start_urls[0],
@@ -23,10 +21,6 @@ class sbazar(scrapy.Spider):
                  'szncmpone': '1'}
             ,
             dont_filter=True,
-            #headers={
-            #    "Referer": "https://www.odkarla.cz/",
-            #    "User-Agent": "Mozilla/5.0",
-            #},
             callback=self.parse,
         )
 
@@ -34,13 +28,12 @@ class sbazar(scrapy.Spider):
         for item in response.xpath('//div[contains(@class, "w-screen-offer-card-list")]/*[2]//ul[@data-test="offer-list"]/*'):
             item = item.xpath('.//div[contains(@class, "relative")]/a')
             
-            title = item.xpath('.//div[contains(@class, "group-hover/card:text-red-hover")]//text()').get()  #('./div/*[1]/*[1]/text()').get()  #('./div/*[1]/div[contains(@class, "@cardLg:pr-2")]//text()').get()
+            title = item.xpath('.//div[contains(@class, "group-hover/card:text-red-hover")]//text()').get()
             url = item.xpath('./@href').get()
-            price = item.xpath('.//div[contains(@class, "line-clamp-1 text-ellipsis text-dark-blue-60")]/b/text()').get() #'./div/*[1]/*[2]/b/text()').get()      #('.//div[contains(@class, "@cardLg:pr-2")]/*[2]/b//text()').get() or ""
-            
+            price = item.xpath('.//div[contains(@class, "line-clamp-1 text-ellipsis text-dark-blue-60")]/b/text()').get()
+
             if price is None or title is None:
-                print("!!!!!!!!!!!!!!!!!")
-                print(url)
+                print("Invalid offer")
                 continue
             
             price = "".join(ch for ch in price if ch.isdigit())

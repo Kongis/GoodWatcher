@@ -2,7 +2,7 @@ services:
   goodwatcher:
     image: goodwatcher:latest
     build: .
-    #restart: unless-stopped
+    restart: unless-stopped
     stdin_open: true
     tty: true
     env_file:
