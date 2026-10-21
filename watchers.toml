@@ -1,0 +1,13 @@
+#TEMPLATE
+
+#[[watcher]]
+#name = "garmin-odkarla"
+#site = "bazos"          # odkarla | sbazar | bazos | cyklobazar | aukro
+#search = "garmin"
+#keywords = "GPS fenix"         # volitelné
+
+[[watcher]]
+name = "garmin-sbazar"
+site = "sbazar"
+search = "garmin edge"
+keywords = ""

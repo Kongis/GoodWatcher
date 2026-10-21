@@ -1,0 +1,16 @@
+services:
+  goodwatcher:
+    image: goodwatcher:latest
+    build: .
+    #restart: unless-stopped
+    stdin_open: true
+    tty: true
+    env_file:
+      - .env
+    environment:
+      DB_PATH: /app/data/app.db
+    volumes:
+      - data:/app/data
+
+volumes:
+  data:

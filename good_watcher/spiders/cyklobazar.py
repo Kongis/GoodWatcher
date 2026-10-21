@@ -4,19 +4,6 @@ from scrapy.http import Response
 import requests
 import time
 
-headers = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/131.0.0.0 Safari/537.36"
-    ),
-    "Accept": (
-        "text/html,application/xhtml+xml,application/xml;"
-        "q=0.9,image/avif,image/webp,*/*;q=0.8"
-    ),
-    "Accept-Language": "cs-CZ,cs;q=0.9,en;q=0.8",
-}
-
 class cyklobazar(scrapy.Spider):
     name = "cyklobazar"
     custom_settings = {
@@ -38,12 +25,7 @@ class cyklobazar(scrapy.Spider):
 
         
 
-    async def start(self):
-        
-        #res = requests.get(self.start_urls[0], headers=headers, timeout=10)
-
-        #self.parse(res)
-        
+    async def start(self):     
         
         yield scrapy.Request(
             url= self.start_urls[0],
@@ -57,11 +39,10 @@ class cyklobazar(scrapy.Spider):
 
 
         for item in response.xpath('//li[@class="cb-offer-list__item"]'):
-            #item = item.xpath('.//div[contains(@class, "@container group/card")]/a')
-            
-            title = item.xpath('./a//div[@class="cb-offer__header"]/h4/text()').get()  #('./div/*[1]/div[contains(@class, "@cardLg:pr-2")]//text()').get()
+
+            title = item.xpath('./a//div[@class="cb-offer__header"]/h4/text()').get()
             url = item.xpath('./a/@href').get()
-            price = item.xpath('./a//strong[@class="cb-offer__price"]').get()      #('.//div[contains(@class, "@cardLg:pr-2")]/*[2]/b//text()').get() or ""
+            price = item.xpath('./a//strong[@class="cb-offer__price"]').get()
             
             if price is None or title is None:
                 continue

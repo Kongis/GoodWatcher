@@ -10,6 +10,7 @@ try:
     conn = connection("data/app.db")
     guards = Guards(conn)
 
+    '''
     parser = argparse.ArgumentParser()
     parser.add_argument("--first", action="store_true", default=False)
     parser.add_argument("--name", type=str, default="", help="Name watcher for silent first run")
@@ -23,12 +24,15 @@ try:
         process.start()
         exit(0)
 
+    '''
     process = CrawlerProcess(get_project_settings())
 
     for g in guards.active():
-        process.crawl(g.spider, guard=g.name, notify=not args.first, start_url=g.url)
+        process.crawl(g.spider, guard=g.name, notify=not g.first, start_url=g.url)
 
     process.start()
+    guards.firstRun()
+    print("firstRun called")
     exit(0)
 
 except Exception as e:

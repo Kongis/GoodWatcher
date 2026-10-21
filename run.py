@@ -1,10 +1,14 @@
-import asyncio
 import sys
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
+import subprocess
+import os
+import time
+import tomllib
 from good_watcher.db import connection, Guards, Guard
+from dotenv import load_dotenv
 
-conn = connection("data/app.db")
+load_dotenv()
+
+conn = connection(os.environ["DB_PATH"]) #connection("data/app.db")
 guards = Guards(conn)
 
 ODKARLA_URL = "https://live.luigisbox.tech/search?tracker_id=224905-260203&f[]=type:item&f[]=availability:1&q={key}&sort=price_amount:desc&size=48"
@@ -14,141 +18,51 @@ CYKLOBAZAR_URL = 'https://www.cyklobazar.cz/vsechny-kategorie?q={key}'
 AUKRO_URL = 'https://aukro.cz/lp/nejlepsi-{key}'
 WAIT_TIME = 3600
 
-async def crawler(flag_stop: asyncio.Event):
-    print('\n Silent run start')
+def crawler():
     
-    with open("crawler.log", "a") as log:
-        proc = await asyncio.create_subprocess_exec(
-            sys.executable, "crawler.py", "--first",
-            stdout=log, stderr=log,
-        )
-    await proc.wait()
-    print("\n Silent run was successful")
-
-    while flag_stop.is_set():
-
-        try:
-            await asyncio.wait_for(flag_stop.wait(), timeout=WAIT_TIME)
-            break
+    while True:
+        print('Crawler start')
         
-        except asyncio.TimeoutError:
-            print('\n Normal run start')
+        with open("crawler.log", "w") as log:
+            subprocess.run(
+                [sys.executable, "crawler.py"],
+                stdout=log, stderr=log,
+            )
 
-            with open("crawler.log", "w") as log:
-                proc = await asyncio.create_subprocess_exec(
-                    sys.executable, "crawler.py",
-                    stdout=log, stderr=log,
-                )
-            await proc.wait()
-            print("\n Normal run was successful")
+        print("Crawler was successful")
+        time.sleep(WAIT_TIME)
 
-async def first_crawl(name: str):
 
-    record = guards.get(name)
-
-    with open("silent_crawler.log", "a") as log:
-        proc = await asyncio.create_subprocess_exec(
-            sys.executable, "crawler.py", "--first", record.name,
-            stdout=log, stderr=log,
-        )
-    await proc.wait()
-
-async def newShop():
-
-    while True:
-
-        print("Web to watch:")
-        print("1.) OdKarla.cz")
-        print("2.) Sbazar.cz")
-        print("3.) Bazos.cz")
-        print("4.) Cyklobazar")
-        print("5.) Aukro.cz")
-        print("6.) Exit")
-
-        try:
-                answer = int(await asyncio.to_thread(input, "Zvol 1-5: "))
-                name = str(await asyncio.to_thread(input, "Name Watcher: "))
-                search = str(await asyncio.to_thread(input, "Search word: "))
-                keywords = str(await asyncio.to_thread(input, "Keyword (Optional): "))
-
-        except Exception as e:
-            print(e)
-            continue
-
-        try:
-            match answer:
                 
-                    case 1:
-                        guards.add_shop(Guard(name, 
-                            ODKARLA_URL.format(key=search), 
-                            "odkarla", keywords))
-                        await first_crawl(name)
+def loadGuard():
+    guards.deactivateAll()
+    with open("watchers.toml", "rb") as f:
+        watchers = tomllib.load(f)
 
-                    case 2:
-                        guards.add_shop(Guard(name, 
-                            SBAZAR_URL.format(key=search), 
-                            "sbazar", keywords))
-                        await first_crawl(name)
+    for w in watchers["watcher"]:
 
-                    case 3:
-                        guards.add_shop(Guard(name, 
-                            BAZOS_URL.format(key=search), 
-                            "bazos", keywords))
-                        await first_crawl(name)
-                        
-                    case 4:
-                        guards.add_shop(Guard(name, 
-                            CYKLOBAZAR_URL.format(key=search), 
-                            "cyklobazar", keywords))
-                        await first_crawl(name)
-                        
-                    case 5:
-                        guards.add_shop(Guard(name, 
-                            AUKRO_URL.format(key=search), 
-                            "aukro", keywords))
-                        await first_crawl(name)
-
-                    case 6:
-                        return
-                    case _:
-                        print("Unsupported input")
-                        continue
-
-        except Exception as error:
-            print(error)
-
-async def menu(flag_stop: asyncio.Event):
-    while True:
-        print("1. Add new shop to watch")
-        print("2. Terminate")
-        try:
-            answer = int(await asyncio.to_thread(input, "Choose:"))
-        except Exception as e:
-            print(e)
-            continue
-
-        match answer:
-            case 1:
-                await newShop()
-
-            case 2:
-                flag_stop.set()
-                return
+        match w['site']:
             
+            case 'odkarla':
+                url = ODKARLA_URL.format(key=w['search'])
+            case 'bazos':
+                url = BAZOS_URL.format(key=w['search'])
+            case 'aukro':
+                url = AUKRO_URL.format(key=w['search'])
+            case 'cyklobazar':
+                url = CYKLOBAZAR_URL.format(key=w['search'])
+            case 'sbazar':
+                url = SBAZAR_URL.format(key=w['search'])
+
             case _:
-                print("Unsupported input")
+                print("Invalid site")
 
-async def main():
-    stop = asyncio.Event()
-
-    await asyncio.gather(
-        crawler(stop),
-        menu(stop),
-    )
-
+        newGuard = Guard(w['name'], url, w['site'],w.get('keywords', ""), True)
+        guards.add_shop(newGuard)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    loadGuard()
+    crawler()
     
     #ONLY FOR DEBUG
     #process = CrawlerProcess(get_project_settings())

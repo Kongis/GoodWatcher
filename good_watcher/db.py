@@ -6,12 +6,14 @@ import asyncio
 from sqlite3 import Connection
 from dataclasses import dataclass
 
+
 @dataclass
 class Guard:
     name: str
     url: str
     spider: str
     keyword: str
+    first: bool
 
 @dataclass
 class Good:
@@ -38,22 +40,34 @@ class Guards():
                 name      TEXT UNIQUE NOT NULL,
                 url       TEXT NOT NULL,
                 spider    TEXT NOT NULL,
-                keyword   TEXT
+                keyword   TEXT,
+                active    BOOL NOT NULL,
+                first     BOOL NOT NULL
             )
         """)
 
 
     def add_shop(self, record: Guard):
-        self.conn.execute("INSERT INTO guards (name, url, spider, keyword) VALUES (?, ?, ?, ?)", (record.name, record.url, record.spider, record.keyword))
+
+        res = self.conn.execute("SELECT name, url, spider, keyword FROM guards WHERE name = ?", (record.name,)).fetchone()
+        if res is None:
+            self.conn.execute("INSERT INTO guards (name, url, spider, keyword, active, first) VALUES (?, ?, ?, ?, 1, 1)", (record.name, record.url, record.spider, record.keyword,))
+        
+        else:
+            self.conn.execute("UPDATE guards SET active = 1 WHERE name = ?", (record.name,))
+        self.conn.commit()
+
+    def deactivateAll(self):
+        self.conn.execute("UPDATE guards SET active = 0")
         self.conn.commit()
 
     def active(self):
-        res = self.conn.execute("SELECT name, url, spider, keyword FROM guards")
+        res = self.conn.execute("SELECT name, url, spider, keyword, first FROM guards WHERE active = 1")
         return [Guard(**dict(r)) for r in res]
 
-    def get(self, name: str):
-        res = self.conn.execute("SELECT name, url, spider, keyword FROM guards WHERE name = ?", (name,)).fetchone()
-        return Guard(**dict(res))
+    def firstRun(self):
+        self.conn.execute("UPDATE guards SET first = 0")
+        self.conn.commit()
 
 class Goods():
     def __init__(self, conn):
